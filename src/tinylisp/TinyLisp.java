@@ -48,9 +48,6 @@ public class TinyLisp {
 	private static void run(String source) {
 		Tokenizer tokenizer = new Tokenizer(source);
 		List<Token> tokens = tokenizer.Tokenize();
-		tokens.forEach(token -> {
-			System.out.println("" + token.line + "- " + token.type + ": " + token.literal + "; text: ");
-		});
 		if (hadError) return;
 		Parser parser = new Parser(tokens);
 		List<Expression> expressions = parser.parse();

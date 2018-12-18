@@ -74,6 +74,7 @@ public class Parser {
 		consume(SYMBOL, "Expect symbol after 'define'");
 		Token name = previous();
 		Expression body = expression();
+		consume(RIGHT_PAREN, "Expect ')' after 'define'");
 		return new Expression.Define(name, body);
 	}
 	
