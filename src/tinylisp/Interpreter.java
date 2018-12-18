@@ -6,6 +6,7 @@ import tinylisp.Expression.Call;
 import tinylisp.Expression.Define;
 import tinylisp.Expression.Lambda;
 import tinylisp.Expression.Lookup;
+import tinylisp.Expression.Print;
 import tinylisp.Expression.Value;
 import tinylisp.Expression.Visitor;
 
@@ -27,9 +28,8 @@ public class Interpreter implements Visitor<Object> {
 		}
 	}
 	
-	public void evaluate(Expression e) {
-		Object value = e.accept(this);
-		System.out.println(value);
+	public Object evaluate(Expression e) {
+		return e.accept(this);
 	}
 
 	@Override
@@ -56,6 +56,13 @@ public class Interpreter implements Visitor<Object> {
 	@Override
 	public Object visitLookup(Lookup L) {
 		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Object visitPrint(Print p) {
+		Object val = evaluate(p.expr);
+		System.out.println(val);
 		return null;
 	}
 	

@@ -21,6 +21,7 @@ public class Tokenizer {
 		this.reserved.put("false", FALSE);
 		this.reserved.put("lambda", LAMBDA);
 		this.reserved.put("define", DEFINE);
+		this.reserved.put("print", PRINT);
 	}
 	
 	public List<Token> Tokenize() {

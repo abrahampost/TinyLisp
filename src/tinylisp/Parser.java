@@ -44,6 +44,7 @@ public class Parser {
 		if (match(SYMBOL)) return call();
 		if (match(LAMBDA)) return lambda();
 		if (match(DEFINE)) return define();
+		if (match(PRINT)) return print();
 		throw new ParseError("Unknown token " + current().type);
 	}
 	
@@ -76,6 +77,12 @@ public class Parser {
 		Expression body = expression();
 		consume(RIGHT_PAREN, "Expect ')' after 'define'");
 		return new Expression.Define(name, body);
+	}
+	
+	private Expression print() {
+		Expression expr = expression();
+		consume(RIGHT_PAREN, "Expect ')' after 'print'");
+		return new Expression.Print(expr);
 	}
 	
 	private Expression value() {
