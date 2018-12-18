@@ -32,20 +32,20 @@ public class TinyLisp {
 		BufferedReader reader = new BufferedReader(input);
 		while (true) {
 			System.out.print("> ");
-			run(reader.readLine());
+			run(reader.readLine(), true);
 			hadError = false;
 		}
 	}
 	
 	private static void runFile(String loc) throws IOException {
 		byte[] bytes = Files.readAllBytes(Paths.get(loc));
-		run(new String(bytes, Charset.defaultCharset()));
+		run(new String(bytes, Charset.defaultCharset()), false);
 		if (hadError) {
 			System.exit(1);
 		}
 	}
 	
-	private static void run(String source) {
+	private static void run(String source, boolean repl) {
 		Tokenizer tokenizer = new Tokenizer(source);
 		List<Token> tokens = tokenizer.Tokenize();
 		if (hadError) return;
@@ -53,7 +53,7 @@ public class TinyLisp {
 		List<Expression> expressions = parser.parse();
 		if (hadError) return;
 		
-		interpreter.interpret(expressions);
+		interpreter.interpret(expressions, repl);
 	}
 	
 	public static void error(int line, String message) {

@@ -12,6 +12,7 @@ public abstract class Expression {
 		R visitLookup(Lookup L);
 		R visitPrint(Print p);
 	}
+
 	
 	static class Call extends Expression {
 		Token callee;
@@ -38,6 +39,7 @@ public abstract class Expression {
 			this.params = params;
 			this.body = body;
 		}
+
 		
 		@Override
 		<R> R accept(Visitor<R> visitor) {
