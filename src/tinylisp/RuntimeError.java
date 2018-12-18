@@ -2,9 +2,9 @@ package tinylisp;
 
 public class RuntimeError extends RuntimeException {
 	String message;
-	Token token;
-	RuntimeError(Token token, String message) {
-		this.token = token;
+	int line;
+	RuntimeError(int line, String message) {
+		this.line = line;
 		this.message = message;
 	}
 }

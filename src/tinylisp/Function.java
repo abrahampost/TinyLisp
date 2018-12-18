@@ -5,7 +5,8 @@ import java.util.List;
 import tinylisp.Expression.Lambda;
 
 interface Callable {
-	Object call(Interpreter interpreter, List<Object> arguments);
+	Object call(Interpreter interpreter, List<Object> arguments, int line);
+	int arity();
 }
 public class Function implements Callable {
 	Lambda lambda;
@@ -17,7 +18,7 @@ public class Function implements Callable {
 	}
 	
 	@Override
-	public Object call(Interpreter interpreter, List<Object> arguments) {
+	public Object call(Interpreter interpreter, List<Object> arguments, int line) {
 		Environment environment = new Environment(closure);
 		for (int i = 0; i < lambda.params.size(); i++) {
 			environment.define(lambda.params.get(i), arguments.get(i));
@@ -29,6 +30,10 @@ public class Function implements Callable {
 	
 	public String toString() {
 		return "<lambda>";
+	}
+
+	public int arity() {
+		return lambda.params.size();
 	}
 	
 }

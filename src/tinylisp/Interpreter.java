@@ -13,10 +13,11 @@ import tinylisp.Expression.Visitor;
 
 public class Interpreter implements Visitor<Object> {
 	
+	Environment globals = Globals.getGlobals();
 	Environment env;
 	
 	public Interpreter() {
-		this.env = new Environment(null);
+		this.env = globals;
 	}
 	
 	public void interpret(List<Expression> expressions, boolean repl) {
@@ -26,7 +27,7 @@ public class Interpreter implements Visitor<Object> {
 				if (repl && val != null) System.out.println(val);
 			}
 		} catch (RuntimeError e) {
-			TinyLisp.error(e.token.line, e.message);
+			TinyLisp.error(e.line, e.message);
 		}
 	}
 	
@@ -38,7 +39,13 @@ public class Interpreter implements Visitor<Object> {
 	public Object visitCall(Call c) {
 		Object found = env.get(c.callee);
 		if (!(found instanceof Callable)) {
-			throw new RuntimeError(c.callee, "Callee not of type 'lambda'");
+			throw new RuntimeError(c.callee.line, "Callee not of type 'lambda'");
+		}
+		
+		Callable func = (Callable)found;
+
+		if (c.args.size() < func.arity()) {
+			throw new RuntimeError(c.callee.line, "too few arguments (at least: " + func.arity() + " get: " + c.args.size() + ")");
 		}
 		
 		List<Object> arguments = new ArrayList<Object>();
@@ -46,8 +53,7 @@ public class Interpreter implements Visitor<Object> {
 			arguments.add(evaluate(expr));
 		}
 		
-		Function func = (Function)found;
-		Object val = func.call(this, arguments);
+		Object val = func.call(this, arguments, c.callee.line);
 		
 		return val;
 	}

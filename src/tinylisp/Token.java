@@ -25,4 +25,15 @@ class Token {
 		this.literal = literal;
 		this.line = line;
 	}
+	
+	/**
+	 * Useful for defining globals
+	 * @param name
+	 */
+	Token(String name) {
+		this.type = TokenType.SYMBOL;
+		this.text = name;
+		this.literal = null;
+		this.line = -1;
+	}
 }

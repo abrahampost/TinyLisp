@@ -8,6 +8,7 @@ public class Environment {
 	Map<String, Object> values;
 	
 	public Environment(Environment enclosing) {
+		this.enclosing = enclosing;
 		values = new HashMap<String, Object>();
 	}
 	
@@ -19,9 +20,12 @@ public class Environment {
 	public Object get(Token var) {
 		String name = var.text;
 		Object found = this.values.get(name);
-		if (found == null) {
-			throw new RuntimeError(var, "undefined variable '" + name + "'");
+		if (found != null) {
+			return found;
 		}
-		return found;
+		if (enclosing != null) {
+			return enclosing.get(var);
+		}
+		throw new RuntimeError(var.line, "undefined variable '" + name + "'");
 	}
 }
