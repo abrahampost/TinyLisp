@@ -20,6 +20,7 @@ public class Tokenizer {
 		this.reserved.put("true", TRUE);
 		this.reserved.put("false", FALSE);
 		this.reserved.put("lambda", LAMBDA);
+		this.reserved.put("define", DEFINE);
 	}
 	
 	public List<Token> Tokenize() {
@@ -41,22 +42,12 @@ public class Tokenizer {
 			case '\n': line++; break;
 			case '(': addToken(LEFT_PAREN); break;
 			case ')': addToken(RIGHT_PAREN); break;
-			case '+': addToken(PLUS); break;
-			case '-': addToken(MINUS); break;
-			case '*': addToken(STAR); break;
-			case '/': addToken(SLASH); break;
-			case '=': addToken(EQUAL); break;
-			case ',': addToken(COMMA); break;
 			
-			//two-wide characters
-			case '<': addToken(match('=') ? LESS_EQUAL : LESS); break;
-			case '>': addToken(match('=') ? GREATER_EQUAL : GREATER); break;
-			case '!': addToken(match('=') ? BANG_EQUAL : BANG); break;
 			case '"': string(); break;
 			default:
 				if (isNum(c)) {
 					number();
-				} else if (isAlpha(c)) {
+				} else if (isValidAscii(c)) {
 					symbol();
 				} else {
 					TinyLisp.error(line, "Unrecognized token -> " + c);
@@ -93,7 +84,7 @@ public class Tokenizer {
 	}
 	
 	private void symbol() {
-		while (isAlphaNum(peek())) {
+		while (isValidAscii(peek())) {
 			advance();
 		}
 		
@@ -103,7 +94,7 @@ public class Tokenizer {
 		
 		if (type == null) type = SYMBOL;
 		
-		addToken(type);
+		addToken(type, text);
 	}
 	
 	private boolean isNum(char c) {
@@ -118,6 +109,11 @@ public class Tokenizer {
 	
 	private boolean isAlphaNum(char c) {
 		return isNum(c) || isAlpha(c);
+	}
+	
+	private boolean isValidAscii(char c) {
+		//all non-stop characters
+		return c >= 33 && c <= 127 && c != '(' && c != ')';
 	}
 	
 	private char advance() {

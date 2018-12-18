@@ -2,7 +2,7 @@ package tinylisp;
 
 enum TokenType {
 	//single character tokens
-	LEFT_PAREN, RIGHT_PAREN, PLUS, MINUS, STAR, SLASH, LESS, GREATER, BANG, EQUAL, COMMA,
+	LEFT_PAREN, RIGHT_PAREN,
 
 	//double character tokens
 	BANG_EQUAL, LESS_EQUAL, GREATER_EQUAL,
@@ -11,7 +11,7 @@ enum TokenType {
 	SYMBOL, STRING, NUM,
 	
 	//reserved words
-	TRUE, FALSE, LAMBDA,
+	TRUE, FALSE, LAMBDA, DEFINE,
 	
 	EOF
 }

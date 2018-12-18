@@ -3,13 +3,33 @@ package tinylisp;
 import java.util.List;
 
 import tinylisp.Expression.Call;
+import tinylisp.Expression.Define;
 import tinylisp.Expression.Lambda;
+import tinylisp.Expression.Lookup;
+import tinylisp.Expression.Value;
 import tinylisp.Expression.Visitor;
 
-public class Interpreter implements Visitor {
+public class Interpreter implements Visitor<Object> {
+	
+	Environment env;
+	
+	public Interpreter() {
+		this.env = new Environment(null);
+	}
 	
 	public void interpret(List<Expression> expressions) {
-		return;
+		try {
+			for (Expression e : expressions) {
+				evaluate(e);
+			}
+		} catch (RuntimeError e) {
+			TinyLisp.error(e.token.line, e.message);
+		}
+	}
+	
+	public void evaluate(Expression e) {
+		Object value = e.accept(this);
+		System.out.println(value);
 	}
 
 	@Override
@@ -19,6 +39,23 @@ public class Interpreter implements Visitor {
 
 	@Override
 	public Object visitLambda(Lambda l) {
+		return null;
+	}
+
+	@Override
+	public Object visitValue(Value v) {
+		return v.value;
+	}
+
+	@Override
+	public Object visitDefine(Define d) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Object visitLookup(Lookup L) {
+		// TODO Auto-generated method stub
 		return null;
 	}
 	
