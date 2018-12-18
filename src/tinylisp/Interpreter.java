@@ -5,6 +5,7 @@ import java.util.List;
 
 import tinylisp.Expression.Call;
 import tinylisp.Expression.Define;
+import tinylisp.Expression.If;
 import tinylisp.Expression.Lambda;
 import tinylisp.Expression.Lookup;
 import tinylisp.Expression.Print;
@@ -87,6 +88,17 @@ public class Interpreter implements Visitor<Object> {
 		return null;
 	}
 	
+	@Override
+	public Object visitIf(If i) {
+		Object value = evaluate(i.condition);
+			
+		if (isTruthy(value)) {
+			return evaluate(i.then);
+		} else {
+			return evaluate(i.elseExpr);
+		}
+	}
+
 	public Object executeFunction(Expression body, Environment closure) {
 		Environment prev = this.env;
 		this.env = closure;
@@ -97,6 +109,14 @@ public class Interpreter implements Visitor<Object> {
 			this.env = prev;
 		}
 		return val;
+	}
+	
+	private boolean isTruthy(Object value) {
+		//scheme has weird truthy values
+		if ((value instanceof Boolean)) {
+			return (Boolean)value;
+		}
+		return true;
 	}
 	
 }

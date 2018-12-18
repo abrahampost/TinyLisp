@@ -11,7 +11,7 @@ enum TokenType {
 	SYMBOL, STRING, NUM,
 	
 	//reserved words
-	TRUE, FALSE, LAMBDA, DEFINE, PRINT
+	TRUE, FALSE, LAMBDA, DEFINE, PRINT, IF
 }
 
 class Token {

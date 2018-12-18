@@ -11,6 +11,7 @@ public abstract class Expression {
 		R visitDefine(Define d);
 		R visitLookup(Lookup L);
 		R visitPrint(Print p);
+		R visitIf(If i);
 	}
 
 	
@@ -103,6 +104,24 @@ public abstract class Expression {
 		@Override
 		<R> R accept(Visitor<R> visitor) {
 			return visitor.visitPrint(this);
+		}
+	}
+	
+	static class If extends Expression {
+
+		Expression condition;
+		Expression then;
+		Expression elseExpr;
+		
+		If(Expression condition, Expression then, Expression elseExpr) {
+			this.condition = condition;
+			this.then = then;
+			this.elseExpr = elseExpr;
+		}
+		
+		@Override
+		<R> R accept(Visitor<R> visitor) {
+			return visitor.visitIf(this);
 		}
 	}
 	

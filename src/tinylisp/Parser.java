@@ -29,7 +29,7 @@ public class Parser {
 					expressions.add(expression());				
 			}
 		} catch (ParseError e) {
-			TinyLisp.error(current().line, e.message);
+			TinyLisp.error(previous().line, e.message);
 		}
 		
 		return expressions;
@@ -45,7 +45,11 @@ public class Parser {
 		if (match(LAMBDA)) return lambda();
 		if (match(DEFINE)) return define();
 		if (match(PRINT)) return print();
-		throw new ParseError("Unknown token " + current().type);
+		if (match(IF)) return ifExpr();
+		if (current() == null) {
+			throw new ParseError("unable to parse expression after " + previous().type + ": " + (previous().text != null ? previous().literal : ""));
+		}
+		throw new ParseError("" + current().text + " is not a function");
 	}
 	
 	private Expression call() {
@@ -85,14 +89,30 @@ public class Parser {
 		return new Expression.Print(expr);
 	}
 	
+	private Expression ifExpr() {
+		Expression condition = expression();
+		Expression then = expression();
+		Expression elseExpr;
+		if (check(RIGHT_PAREN)) {
+			elseExpr = new Expression.Value(null);
+		} else {
+			elseExpr = expression();
+		}
+		consume(RIGHT_PAREN, "Expect right paren after call");
+		return new Expression.If(condition, then, elseExpr);
+	}
+	
 	private Expression value() {
-		if (match(STRING, NUM)) {
+		if (match(STRING, NUM, TRUE, FALSE)) {
 			return new Expression.Value(previous().literal);						
 		}
 		if (match(SYMBOL)) {
 			return new Expression.Lookup(previous());
 		}
-		throw new ParseError("unknown terminal type '" + current().type + ": " + current().literal + "'");
+		if (current() == null) {
+			throw new ParseError("unable to parse expression after " + previous().type + ": " + (previous().text != null ? previous().literal : ""));			
+		}
+		throw new ParseError("unable to parse expression at " + current().literal);
 	}
 	
 	private void consume(TokenType type, String errorMessage) {
@@ -103,6 +123,9 @@ public class Parser {
 	}
 	
 	private TokenType peek() {
+		if (current >= tokens.size()) {
+			return null;
+		}
 		return tokens.get(current).type;
 	}
 	
@@ -121,7 +144,8 @@ public class Parser {
 	}
 	
 	private Token current() {
-		return tokens.get(current);
+		if (!atEnd()) tokens.get(current);
+		return null;
 	}
 	
 	private Token previous() {

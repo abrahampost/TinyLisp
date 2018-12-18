@@ -22,6 +22,7 @@ public class Tokenizer {
 		this.reserved.put("lambda", LAMBDA);
 		this.reserved.put("define", DEFINE);
 		this.reserved.put("print", PRINT);
+		this.reserved.put("if", IF);
 	}
 	
 	public List<Token> Tokenize() {
@@ -94,8 +95,9 @@ public class Tokenizer {
 		TokenType type = reserved.get(text);
 		
 		if (type == null) type = SYMBOL;
-		
-		addToken(type, text);
+		else if (type == TRUE) addToken(type, true);
+		else if (type == FALSE) addToken(type, false);
+		else addToken(type, text);
 	}
 	
 	private boolean isNum(char c) {
