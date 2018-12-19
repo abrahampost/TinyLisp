@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import tinylisp.Expression.AnonCall;
+import tinylisp.Expression.Begin;
 import tinylisp.Expression.Call;
 import tinylisp.Expression.Define;
 import tinylisp.Expression.If;
@@ -116,6 +117,21 @@ public class Interpreter implements Visitor<Object> {
 			return evaluate(i.then);
 		} else {
 			return evaluate(i.elseExpr);
+		}
+	}
+	
+	@Override
+	public Object visitBegin(Begin b) {
+		Environment closure = new Environment(this.env);
+		Environment prev = this.env;
+		this.env = closure;
+		try {
+			for(int i = 0; i < b.expressions.size() - 1; i++) {
+				evaluate(b.expressions.get(i));
+			}			
+			return evaluate(b.expressions.get(b.expressions.size() - 1));
+		} finally {
+			this.env = prev;
 		}
 	}
 

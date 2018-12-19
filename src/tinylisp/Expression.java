@@ -13,6 +13,7 @@ public abstract class Expression {
 		R visitLookup(Lookup L);
 		R visitPrint(Print p);
 		R visitIf(If i);
+		R visitBegin(Begin b);
 	}
 
 	
@@ -143,6 +144,21 @@ public abstract class Expression {
 		<R> R accept(Visitor<R> visitor) {
 			return visitor.visitIf(this);
 		}
+	}
+	
+	static class Begin extends Expression {
+
+		List<Expression> expressions;
+		
+		Begin(List<Expression> expressions) {
+			this.expressions = expressions;
+		}
+		
+		@Override
+		<R> R accept(Visitor<R> visitor) {
+			return visitor.visitBegin(this);
+		}
+		
 	}
 	
 	abstract<R> R accept(Visitor<R> visitor);

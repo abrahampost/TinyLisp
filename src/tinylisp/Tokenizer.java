@@ -23,6 +23,7 @@ public class Tokenizer {
 		this.reserved.put("define", DEFINE);
 		this.reserved.put("print", PRINT);
 		this.reserved.put("if", IF);
+		this.reserved.put("begin", BEGIN);
 	}
 	
 	public List<Token> Tokenize() {

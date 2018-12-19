@@ -46,6 +46,7 @@ public class Parser {
 		if (match(DEFINE)) return define();
 		if (match(PRINT)) return print();
 		if (match(IF)) return ifExpr();
+		if (match(BEGIN)) return begin();
 		if (match(LEFT_PAREN) && match(LAMBDA)) return anonLambda();
 		if (current() == null) {
 			throw new ParseError("unable to parse expression after " + previous().type + ": " + (previous().text != null ? previous().literal : ""));
@@ -114,6 +115,16 @@ public class Parser {
 		return new Expression.If(condition, then, elseExpr);
 	}
 	
+	private Expression begin() {
+		
+		List<Expression> expressions = new ArrayList<Expression>();
+		while (check(LEFT_PAREN)) {
+			expressions.add(expression());
+		}
+		consume(RIGHT_PAREN, "Expect ')' after 'begin'");
+		return new Expression.Begin(expressions);
+	}
+	
 	private Expression value() {
 		if (match(STRING, NUM, TRUE, FALSE)) {
 			return new Expression.Value(previous().literal);						
@@ -121,7 +132,6 @@ public class Parser {
 		if (match(SYMBOL)) {
 			return new Expression.Lookup(previous());
 		}
-		System.out.println("Here");
 		if (current() == null) {
 			throw new ParseError("unable to parse expression after " + previous().type + ": " + (previous().text != null ? previous().literal : ""));			
 		}
