@@ -57,9 +57,9 @@ public class Parser {
 	private Expression call() {
 		Token callee = previous();
 		List<Expression> args = new ArrayList<Expression>();
-		do {
+		while (!check(RIGHT_PAREN) && !atEnd()) {
 			args.add(expression());
-		} while (!check(RIGHT_PAREN) && !atEnd());
+		}
 		consume(RIGHT_PAREN, "Expect right paren after call");
 		return new Expression.Call(callee, args);
 	}

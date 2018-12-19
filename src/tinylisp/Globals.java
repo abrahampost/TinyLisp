@@ -201,6 +201,18 @@ public class Globals {
 				return 2;
 			}
 		});
+		
+		env.define(new Token("clock"), new Callable() {
+			@Override
+			public Object call(Interpreter interpreter, List<Object> arguments, int line) {
+				return (int)(System.nanoTime() / 1000000);
+			}
+
+			@Override
+			public int arity() {
+				return 0;
+			}
+		});
 		return env;
 	}
 }
