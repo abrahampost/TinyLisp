@@ -24,6 +24,10 @@ public class Globals {
 				return 1;
 			}
 			
+			public String toString() {
+				return "<native lambda>";
+			}
+			
 		});
 		env.define(new Token("-"), new Callable() {
 
@@ -43,6 +47,10 @@ public class Globals {
 			@Override
 			public int arity() {
 				return 1;
+			}
+			
+			public String toString() {
+				return "<native lambda>";
 			}
 			
 		});
@@ -66,6 +74,10 @@ public class Globals {
 				return 1;
 			}
 			
+			public String toString() {
+				return "<native lambda>";
+			}
+			
 		});
 		
 		env.define(new Token("/"), new Callable() {
@@ -78,6 +90,9 @@ public class Globals {
 					if (!(arg instanceof Integer)) {
 						throw new RuntimeError(line, "expected num, received " + arg.getClass().getSimpleName());
 					}
+					if ((Integer)arg == 0) {
+						throw new RuntimeError(line, "/ by zero");
+					}
 					total /= (Integer)arg;
 				}
 				return total;
@@ -86,6 +101,10 @@ public class Globals {
 			@Override
 			public int arity() {
 				return 1;
+			}
+			
+			public String toString() {
+				return "<native lambda>";
 			}
 			
 		});
@@ -106,6 +125,10 @@ public class Globals {
 			@Override
 			public int arity() {
 				return 2;
+			}
+			
+			public String toString() {
+				return "<native lambda>";
 			}
 			
 		});
@@ -131,6 +154,10 @@ public class Globals {
 			public int arity() {
 				return 2;
 			}
+			
+			public String toString() {
+				return "<native lambda>";
+			}
 		});
 		
 		env.define(new Token("<="), new Callable() {
@@ -153,6 +180,10 @@ public class Globals {
 			@Override
 			public int arity() {
 				return 2;
+			}
+			
+			public String toString() {
+				return "<native lambda>";
 			}
 		});
 		
@@ -177,6 +208,10 @@ public class Globals {
 			public int arity() {
 				return 2;
 			}
+			
+			public String toString() {
+				return "<native lambda>";
+			}
 		});
 		
 		env.define(new Token(">="), new Callable() {
@@ -200,6 +235,10 @@ public class Globals {
 			public int arity() {
 				return 2;
 			}
+			
+			public String toString() {
+				return "<native lambda>";
+			}
 		});
 		
 		env.define(new Token("clock"), new Callable() {
@@ -212,7 +251,33 @@ public class Globals {
 			public int arity() {
 				return 0;
 			}
+			
+			public String toString() {
+				return "<native lambda>";
+			}
 		});
+		
+		env.define(new Token("print"), new Callable() {
+			@Override
+			public Object call(Interpreter interpreter, List<Object> arguments, int line) {
+				StringBuilder sb = new StringBuilder();
+				arguments.forEach(arg -> {
+					sb.append(arg);
+				});
+				System.out.println(sb);
+				return null;
+			}
+
+			@Override
+			public int arity() {
+				return 1;
+			}
+			
+			public String toString() {
+				return "<native lambda>";
+			}
+		});
+		
 		return env;
 	}
 }

@@ -29,7 +29,14 @@ public class Parser {
 					expressions.add(expression());				
 			}
 		} catch (ParseError e) {
-			TinyLisp.error(previous().line, e.message);
+			int line = 0;
+			if (current() != null) {
+				line = current().line;
+			} else 	if (previous() != null) {
+				line = previous().line;
+			}
+			
+			TinyLisp.error(line, e.message);
 		}
 		
 		return expressions;
@@ -44,7 +51,6 @@ public class Parser {
 		if (match(SYMBOL)) return call();
 		if (match(LAMBDA)) return lambda();
 		if (match(DEFINE)) return define();
-		if (match(PRINT)) return print();
 		if (match(IF)) return ifExpr();
 		if (match(BEGIN)) return begin();
 		if (match(LEFT_PAREN) && match(LAMBDA)) return anonLambda();
@@ -60,20 +66,20 @@ public class Parser {
 		while (!check(RIGHT_PAREN) && !atEnd()) {
 			args.add(expression());
 		}
-		consume(RIGHT_PAREN, "Expect right paren after call");
+		consume(RIGHT_PAREN, "expect right paren after call");
 		return new Expression.Call(callee, args);
 	}
 
 	private Expression lambda() {
-		consume(LEFT_PAREN, "Expect '(' after lambda");
+		consume(LEFT_PAREN, "expect '(' after lambda");
 		List<Token> params = new ArrayList<Token>();
 		do {
-			consume(SYMBOL, "Expect parameter in lambda expression");
+			consume(SYMBOL, "expect parameter in lambda expression");
 			params.add(previous());
 		} while (!check(RIGHT_PAREN) && !atEnd());
-		consume(RIGHT_PAREN, "Expect ')' after param list");
+		consume(RIGHT_PAREN, "expect ')' after param list");
 		Expression body = expression();
-		consume(RIGHT_PAREN, "Expect ')' after expression");
+		consume(RIGHT_PAREN, "expect ')' after expression");
 		return new Expression.Lambda(params, body);
 	}
 	
@@ -84,22 +90,16 @@ public class Parser {
 		do {
 			args.add(expression());
 		} while (!check(RIGHT_PAREN) && !atEnd());
-		consume(RIGHT_PAREN, "Expect right paren after call");
+		consume(RIGHT_PAREN, "expect right paren after call");
 		return new Expression.AnonCall(l, args, lambdaWord);
 	}
 	
 	private Expression define() {
-		consume(SYMBOL, "Expect symbol after 'define'");
+		consume(SYMBOL, "expect symbol after 'define'");
 		Token name = previous();
 		Expression body = expression();
-		consume(RIGHT_PAREN, "Expect ')' after 'define'");
+		consume(RIGHT_PAREN, "expect ')' after 'define'");
 		return new Expression.Define(name, body);
-	}
-	
-	private Expression print() {
-		Expression expr = expression();
-		consume(RIGHT_PAREN, "Expect ')' after 'print'");
-		return new Expression.Print(expr);
 	}
 	
 	private Expression ifExpr() {
@@ -111,7 +111,7 @@ public class Parser {
 		} else {
 			elseExpr = expression();
 		}
-		consume(RIGHT_PAREN, "Expect right paren after call");
+		consume(RIGHT_PAREN, "expect right paren after call");
 		return new Expression.If(condition, then, elseExpr);
 	}
 	
@@ -121,7 +121,7 @@ public class Parser {
 		while (check(LEFT_PAREN)) {
 			expressions.add(expression());
 		}
-		consume(RIGHT_PAREN, "Expect ')' after 'begin'");
+		consume(RIGHT_PAREN, "expect ')' after 'begin'");
 		return new Expression.Begin(expressions);
 	}
 	
@@ -132,10 +132,15 @@ public class Parser {
 		if (match(SYMBOL)) {
 			return new Expression.Lookup(previous());
 		}
-		if (current() == null) {
+		
+		//report an error if it can't figure out what type of node it is creating
+		if (previous() == null) {
+			throw new ParseError("error at beginning of expression");
+		} else if (current() == null) {
 			throw new ParseError("unable to parse expression after " + previous().type + ": " + (previous().text != null ? previous().literal : ""));			
+		} else {
+			throw new ParseError("unable to parse expression at " + current().type + ": " + (current().text != null ? current().literal : ""));			
 		}
-		throw new ParseError("unable to parse expression at " + current().literal);
 	}
 	
 	private void consume(TokenType type, String errorMessage) {
@@ -172,6 +177,7 @@ public class Parser {
 	}
 	
 	private Token previous() {
+		if (current - 1 < 0) return null;
 		return tokens.get(current - 1);
 	}
 	

@@ -10,7 +10,6 @@ import tinylisp.Expression.Define;
 import tinylisp.Expression.If;
 import tinylisp.Expression.Lambda;
 import tinylisp.Expression.Lookup;
-import tinylisp.Expression.Print;
 import tinylisp.Expression.Value;
 import tinylisp.Expression.Visitor;
 
@@ -31,6 +30,11 @@ public class Interpreter implements Visitor<Object> {
 			}
 		} catch (RuntimeError e) {
 			TinyLisp.error(e.line, e.message);
+		} catch (Exception e) {
+			//catch all if a random Java exception occurs during execution
+			TinyLisp.error(0, e.getMessage());
+		} catch(StackOverflowError e) {
+			TinyLisp.error(0, "stack overflow error");
 		}
 	}
 	
@@ -42,7 +46,7 @@ public class Interpreter implements Visitor<Object> {
 	public Object visitCall(Call c) {
 		Object found = env.get(c.callee);
 		if (!(found instanceof Callable)) {
-			throw new RuntimeError(c.callee.line, "Callee not of type 'lambda'");
+			throw new RuntimeError(c.callee.line, "callee not of type 'lambda'");
 		}
 		
 		Callable func = (Callable)found;
@@ -102,13 +106,6 @@ public class Interpreter implements Visitor<Object> {
 		return env.get(L.name);
 	}
 
-	@Override
-	public Object visitPrint(Print p) {
-		Object val = evaluate(p.expr);
-		System.out.println(val);
-		return null;
-	}
-	
 	@Override
 	public Object visitIf(If i) {
 		Object value = evaluate(i.condition);

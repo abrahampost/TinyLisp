@@ -11,7 +11,6 @@ public abstract class Expression {
 		R visitValue(Value v);
 		R visitDefine(Define d);
 		R visitLookup(Lookup L);
-		R visitPrint(Print p);
 		R visitIf(If i);
 		R visitBegin(Begin b);
 	}
@@ -113,19 +112,6 @@ public abstract class Expression {
 			return visitor.visitLookup(this);
 		}
 		
-	}
-	
-	static class Print extends Expression {
-		Expression expr;
-
-		Print(Expression expr) {
-			this.expr = expr;
-		}
-		
-		@Override
-		<R> R accept(Visitor<R> visitor) {
-			return visitor.visitPrint(this);
-		}
 	}
 	
 	static class If extends Expression {
