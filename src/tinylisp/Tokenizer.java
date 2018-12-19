@@ -39,6 +39,7 @@ public class Tokenizer {
 			//ignore whitespace
 			case ' ':
 			case '\t':
+			case '\r':
 				break;
 			//make sure line count is updated
 			case '\n': line++; break;
@@ -52,7 +53,8 @@ public class Tokenizer {
 				} else if (isValidAscii(c)) {
 					symbol();
 				} else {
-					TinyLisp.error(line, "Unrecognized token -> " + c);
+					int i = c;
+					TinyLisp.error(line, "Unrecognized token -> " + i);
 				}
 				break;
 		}
@@ -94,10 +96,16 @@ public class Tokenizer {
 		
 		TokenType type = reserved.get(text);
 		
-		if (type == null) type = SYMBOL;
-		else if (type == TRUE) addToken(type, true);
-		else if (type == FALSE) addToken(type, false);
-		else addToken(type, text);
+		if (type == TRUE) {
+			addToken(type, true);
+		} else if (type == FALSE) {
+			addToken(type, false);
+		} else {
+			if (type == null) {
+				type = SYMBOL;
+			} 
+			addToken(type, text);
+		}
 	}
 	
 	private boolean isNum(char c) {

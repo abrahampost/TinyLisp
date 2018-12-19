@@ -26,6 +26,6 @@ public class Environment {
 		if (enclosing != null) {
 			return enclosing.get(var);
 		}
-		throw new RuntimeError(var.line, "undefined variable '" + name + "'");
+		throw new RuntimeError(var.line, "unbound symbol '" + name + "'");
 	}
 }
