@@ -3,6 +3,7 @@ package tinylisp;
 import java.util.ArrayList;
 import java.util.List;
 
+import tinylisp.Expression.AnonCall;
 import tinylisp.Expression.Call;
 import tinylisp.Expression.Define;
 import tinylisp.Expression.If;
@@ -55,6 +56,25 @@ public class Interpreter implements Visitor<Object> {
 		}
 		
 		Object val = func.call(this, arguments, c.callee.line);
+		
+		return val;
+	}
+	
+	@Override
+	public Object visitAnonCall(AnonCall c) {
+	
+		Function func = new Function(c.lambda, env);
+		
+		if (c.args.size() < func.arity()) {
+			throw new RuntimeError(c.lambdaWord.line, "too few arguments (at least: " + func.arity() + " get: " + c.args.size() + ")");
+		}
+		
+		List<Object> arguments = new ArrayList<Object>();
+		for (Expression expr : c.args) {
+			arguments.add(evaluate(expr));
+		}
+		
+		Object val = func.call(this, arguments, c.lambdaWord.line);
 		
 		return val;
 	}

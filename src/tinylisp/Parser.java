@@ -46,6 +46,7 @@ public class Parser {
 		if (match(DEFINE)) return define();
 		if (match(PRINT)) return print();
 		if (match(IF)) return ifExpr();
+		if (match(LEFT_PAREN) && match(LAMBDA)) return anonLambda();
 		if (current() == null) {
 			throw new ParseError("unable to parse expression after " + previous().type + ": " + (previous().text != null ? previous().literal : ""));
 		}
@@ -73,6 +74,17 @@ public class Parser {
 		Expression body = expression();
 		consume(RIGHT_PAREN, "Expect ')' after expression");
 		return new Expression.Lambda(params, body);
+	}
+	
+	private Expression anonLambda() {
+		Token lambdaWord = previous();
+		Expression l = lambda();
+		List<Expression> args = new ArrayList<Expression>();
+		do {
+			args.add(expression());
+		} while (!check(RIGHT_PAREN) && !atEnd());
+		consume(RIGHT_PAREN, "Expect right paren after call");
+		return new Expression.AnonCall(l, args, lambdaWord);
 	}
 	
 	private Expression define() {
@@ -109,6 +121,7 @@ public class Parser {
 		if (match(SYMBOL)) {
 			return new Expression.Lookup(previous());
 		}
+		System.out.println("Here");
 		if (current() == null) {
 			throw new ParseError("unable to parse expression after " + previous().type + ": " + (previous().text != null ? previous().literal : ""));			
 		}

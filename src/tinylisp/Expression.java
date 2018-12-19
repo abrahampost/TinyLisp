@@ -6,6 +6,7 @@ public abstract class Expression {
 	
 	interface Visitor<R> {
 		R visitCall(Call c);
+		R visitAnonCall(AnonCall c);
 		R visitLambda(Lambda l);
 		R visitValue(Value v);
 		R visitDefine(Define d);
@@ -29,6 +30,25 @@ public abstract class Expression {
 			return visitor.visitCall(this);
 		}
 		
+	}
+	
+	static class AnonCall extends Expression {
+		
+		Lambda lambda;
+		List<Expression> args;
+		//paren helps us report an error message
+		Token lambdaWord;
+		
+		AnonCall(Expression lambda, List<Expression> args, Token lambdaWord) {
+			this.lambda = (Lambda)lambda;
+			this.args = args;
+			this.lambdaWord = lambdaWord;
+		}
+
+		@Override
+		<R> R accept(Visitor<R> visitor) {
+			return visitor.visitAnonCall(this);
+		}
 		
 	}
 	
