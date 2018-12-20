@@ -30,9 +30,21 @@ public class TinyLisp {
 	private static void runRepl() throws IOException {
 		InputStreamReader input = new InputStreamReader(System.in);
 		BufferedReader reader = new BufferedReader(input);
+		String readIn = "";
 		while (true) {
-			System.out.print("> ");
-			run(reader.readLine(), true);
+			if (readIn.length() == 0) {
+				System.out.print("> ");				
+			} else {
+				System.out.print("  ");
+			}
+			
+			readIn += reader.readLine();
+			
+			if (matchingBrackets(readIn)) {
+				run(readIn + "\n", true);
+				readIn = "";
+			}
+			
 			hadError = false;
 		}
 	}
@@ -59,6 +71,15 @@ public class TinyLisp {
 	public static void error(int line, String message) {
 		System.out.printf("ERROR [line %d]: %s\n", line, message);
 		hadError = true;
+	}
+	
+	private static boolean matchingBrackets(String input) {
+		int left = 0, right = 0;
+		for (char c: input.toCharArray()) {
+			if (c == ')') left++;
+			if (c == '(') right++;
+		}
+		return left == right;
 	}
 	
 }
