@@ -291,7 +291,6 @@ public class Globals {
 					}
 					String loc = (String)arg;
 					try {
-						System.out.println(Paths.get(loc));
 						byte[] bytes = Files.readAllBytes(Paths.get(loc));
 						Tokenizer tokenizer = new Tokenizer(new String(bytes, Charset.defaultCharset()));
 						Parser parser = new Parser(tokenizer.Tokenize());

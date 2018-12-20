@@ -32,9 +32,9 @@ public class Interpreter implements Visitor<Object> {
 			TinyLisp.error(e.line, e.message);
 		} catch (Exception e) {
 			//catch all if a random Java exception occurs during execution
-			TinyLisp.error(0, e.getMessage());
+			TinyLisp.error(-1, e.getMessage());
 		} catch(StackOverflowError e) {
-			TinyLisp.error(0, "stack overflow error");
+			TinyLisp.error(-1, "stack overflow error");
 		}
 	}
 	

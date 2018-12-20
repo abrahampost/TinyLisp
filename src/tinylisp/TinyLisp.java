@@ -69,7 +69,8 @@ public class TinyLisp {
 	}
 	
 	public static void error(int line, String message) {
-		System.out.printf("ERROR [line %d]: %s\n", line, message);
+		String lineString = (line != -1 ? " [line " + line + "]": "");
+		System.out.printf("ERROR%s: %s\n", lineString, message);
 		hadError = true;
 	}
 	
