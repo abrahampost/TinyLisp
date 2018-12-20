@@ -1,5 +1,8 @@
 package tinylisp;
 
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 
 public class Globals {
@@ -275,6 +278,34 @@ public class Globals {
 			
 			public String toString() {
 				return "<native lambda>";
+			}
+		});
+		
+		env.define(new Token("import"), new Callable() {
+
+			@Override
+			public Object call(Interpreter interpreter, List<Object> arguments, int line) {
+				for (Object arg : arguments) {
+					if (!(arg instanceof String)) {
+						throw new RuntimeError(line, "Expected string, but got " + arg);
+					}
+					String loc = (String)arg;
+					try {
+						System.out.println(Paths.get(loc));
+						byte[] bytes = Files.readAllBytes(Paths.get(loc));
+						Tokenizer tokenizer = new Tokenizer(new String(bytes, Charset.defaultCharset()));
+						Parser parser = new Parser(tokenizer.Tokenize());
+						interpreter.interpret(parser.parse(), false);
+					} catch(Exception e) {
+						throw new RuntimeError(line, "Error in reading file");
+					}
+				}
+				return null;
+			}
+
+			@Override
+			public int arity() {
+				return 1;
 			}
 		});
 		
