@@ -265,7 +265,11 @@ public class Globals {
 			public Object call(Interpreter interpreter, List<Object> arguments, int line) {
 				StringBuilder sb = new StringBuilder();
 				arguments.forEach(arg -> {
-					sb.append(arg);
+					if (arg == null) {
+						sb.append("()");
+					} else {
+						sb.append(arg);						
+					}
 				});
 				System.out.println(sb);
 				return null;
@@ -306,6 +310,87 @@ public class Globals {
 			public int arity() {
 				return 1;
 			}
+		});
+		
+		env.define(new Token("cons"), new Callable() {
+
+			@Override
+			public Object call(Interpreter interpreter, List<Object> arguments, int line) {
+				if (arguments.size() != 2) {
+					throw new RuntimeError(line, "wrong number of arguments (expected: 2 got: " + arguments.size() + ")");
+				}
+				return new Cons(arguments.get(0), arguments.get(1));
+			}
+
+			@Override
+			public int arity() {
+				return 2;
+			}
+			
+		});
+		
+		env.define(new Token("car"), new Callable() {
+
+			@Override
+			public Object call(Interpreter interpreter, List<Object> arguments, int line) {
+				if (arguments.size() != 1) {
+					throw new RuntimeError(line, "wrong number of arguments (expected: 1 got: " + arguments.size() + ")");
+				}
+				if (!(arguments.get(0) instanceof Cons)) {
+					throw new RuntimeError(line, "Attempt to get car on " + arguments.get(0));
+				}
+				return ((Cons)arguments.get(0)).car;
+			}
+
+			@Override
+			public int arity() {
+				return 1;
+			}
+			
+		});
+		
+		env.define(new Token("cdr"), new Callable() {
+
+			@Override
+			public Object call(Interpreter interpreter, List<Object> arguments, int line) {
+				if (arguments.size() != 1) {
+					throw new RuntimeError(line, "wrong number of arguments (expected: 1 got: " + arguments.size() + ")");
+				}
+				if (!(arguments.get(0) instanceof Cons)) {
+					throw new RuntimeError(line, "Attempt to get cdr on " + arguments.get(0));
+				}
+				return ((Cons)arguments.get(0)).cdr;
+			}
+
+			@Override
+			public int arity() {
+				return 1;
+			}
+			
+		});
+		
+		env.define(new Token("cadr"), new Callable() {
+
+			@Override
+			public Object call(Interpreter interpreter, List<Object> arguments, int line) {
+				if (arguments.size() != 1) {
+					throw new RuntimeError(line, "wrong number of arguments (expected: 1 got: " + arguments.size() + ")");
+				}
+				if (!(arguments.get(0) instanceof Cons)) {
+					throw new RuntimeError(line, "Attempt to get cadr on " + arguments.get(0));
+				}
+				Object next = ((Cons)arguments.get(0)).cdr;
+				if (!(next instanceof Cons)) {
+					throw new RuntimeError(line, "Attempt to get car of " + next);
+				}
+				return ((Cons)next).car;
+			}
+
+			@Override
+			public int arity() {
+				return 1;
+			}
+			
 		});
 		
 		return env;

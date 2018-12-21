@@ -54,6 +54,7 @@ public class Parser {
 		if (match(IF)) return ifExpr();
 		if (match(BEGIN)) return begin();
 		if (match(LEFT_PAREN) && match(LAMBDA)) return anonLambda();
+		if (match(RIGHT_PAREN)) return new Expression.Value(null);
 		if (current() == null) {
 			throw new ParseError("unable to parse expression after " + previous().type + ": " + (previous().text != null ? previous().literal : ""));
 		}
