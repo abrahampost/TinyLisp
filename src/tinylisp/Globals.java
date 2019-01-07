@@ -6,6 +6,14 @@ import java.nio.file.Paths;
 import java.util.List;
 
 public class Globals {
+	
+	public static Object NIL = new Object() {
+		
+		public String toString() {
+			return "nil";
+		}
+	};
+	
 	public static Environment getGlobals() {
 		Environment env = new Environment(null);
 		env.define(new Token("+"), new Callable() {
@@ -384,6 +392,48 @@ public class Globals {
 					throw new RuntimeError(line, "Attempt to get car of " + next);
 				}
 				return ((Cons)next).car;
+			}
+
+			@Override
+			public int arity() {
+				return 1;
+			}
+			
+		});
+		
+		env.define(new Token("list"), new Callable() {
+
+			@Override
+			public Object call(Interpreter interpreter, List<Object> arguments, int line) {
+				if (arguments.size() == 0) {
+					return null;
+				}
+				Cons head = new Cons(arguments.get(0), null);
+				Cons start = head;
+				for (int i = 1; i < arguments.size(); i++) {
+					head.cdr = new Cons(arguments.get(i), null);
+					head = (Cons)head.cdr;
+				}
+				head.cdr = NIL;
+				return start;
+				
+			}
+
+			@Override
+			public int arity() {
+				return 0;
+			}
+			
+		});
+		
+		env.define(new Token("null?"), new Callable() {
+
+			@Override
+			public Object call(Interpreter interpreter, List<Object> arguments, int line) {
+				if (arguments.size() != 1) {
+					throw new RuntimeError(line, "wrong number of arguments (expected: 1 got: " + arguments.size() + ")");
+				}
+				return arguments.get(0) == NIL;
 			}
 
 			@Override

@@ -13,16 +13,18 @@ public class Cons {
 		StringBuilder sb = new StringBuilder("(");
 		Cons start = this;
 		do {
-			if (start.car == null) {
+			if (start.car == Globals.NIL) {
 				sb.append("()");
 			} else {
 				sb.append(start.car.toString());
 			}
 			
-			if (start.cdr == null) {
+			if (start.cdr == Globals.NIL) {
 				//if cdr is null, don't print anything and stop trying to iterate through the list
 				break;
-			} else if ((start.cdr instanceof Cons)) {
+			} else if (start.cdr == null) {
+				throw new RuntimeException("an unspecified error occured");
+			}else if ((start.cdr instanceof Cons)) {
 				//if it is a link to another cons, it is a list and should iterate through
 				start = (Cons)start.cdr;				
 				sb.append(" ");
